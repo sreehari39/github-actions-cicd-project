@@ -6,8 +6,12 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  build-and-push:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout Code
@@ -28,6 +32,14 @@ jobs:
           cd app
           npm test
 
+      - name: Login to GHCR
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
       - name: Build Docker Image
         run: |
-          docker build -t github-actions-app:latest ./app
+          docker build -t ghcr.io/sreehari39/github-actions-app:latest ./app
+
+      - name: Push Docker Image
+        run: |
+          docker push ghcr.io/sreehari39/github-actions-app:latest
