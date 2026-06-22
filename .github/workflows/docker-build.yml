@@ -1,4 +1,4 @@
-name: Build Docker Image
+name: CI Pipeline
 
 on:
   push:
@@ -6,12 +6,27 @@ on:
       - main
 
 jobs:
-  docker:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: |
+          cd app
+          npm install
+
+      - name: Run Tests
+        run: |
+          cd app
+          npm test
 
       - name: Build Docker Image
         run: |
